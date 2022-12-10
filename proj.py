@@ -4,9 +4,10 @@ import pytesseract
 import subprocess, re
 import time
 import RPi.GPIO as GPIO
-from PIL import Image
 from threading import Thread
+from PIL import Image, ImageFile
 
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 volume = 50
 play = True
 flag_start = True
@@ -49,7 +50,8 @@ def down_volume():
 def start():
     global text
     global mas
-    img = Image.open('/home/pi/Desktop/scan.jpg')
+    subprocess.call("scanimage --format=png --mode Color --resolution 300dpi --source Flatbed > scan.png", shell=True)
+    img = Image.open('/home/pi/Desktop/scan.png')
     text = pytesseract.image_to_string(img, config='-l rus --oem 3 --psm 1').replace('-', '').replace('\n', '').replace('\t', '').replace('\r', '').replace('..', '.').replace('.', '. ')
     print(text)
     mas = re.split("\\b[.!?\\n]+(?=\\s)", text)
